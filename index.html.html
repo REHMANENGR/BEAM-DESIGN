@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RC Continuous Beam Design — Office Method (ACI 318-19)</title>
+<style>
+  :root{
+    --navy:#0f2942;
+    --navy-deep:#081a2c;
+    --steel:#3d6d94;
+    --amber:#d97f2c;
+    --amber-dark:#b8641a;
+    --paper:#f7f5ef;
+    --card:#ffffff;
+    --line:#1a1a1a;
+    --yellow:#fff3b0;
+    --green:#bfe3c4;
+    --green-dark:#2f6b3a;
+    --red:#f3c3c0;
+    --red-dark:#9c2b23;
+    --gray:#eceae3;
+    --text:#1c2733;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI', Arial, Helvetica, sans-serif;
+    color:var(--text);
+    margin:0;
+    padding:0;
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      repeating-linear-gradient(0deg, rgba(15,41,66,0.05) 0 1px, transparent 1px 28px),
+      repeating-linear-gradient(90deg, rgba(15,41,66,0.05) 0 1px, transparent 1px 28px);
+  }
+  .topbar{
+    background:linear-gradient(135deg, var(--navy-deep), var(--navy) 60%, var(--steel));
+    color:#fff;
+    padding:22px 26px 20px;
+    border-bottom:5px solid var(--amber);
+  }
+  .topbar h1{
+    margin:0;
+    font-family:Georgia, 'Times New Roman', serif;
+    font-size:24px;
+    letter-spacing:0.3px;
+  }
+  .topbar .sub{
+    font-size:12.5px;
+    color:#cfe0ee;
+    margin-top:6px;
+    letter-spacing:0.2px;
+  }
+  .wrap{
+    max-width:1400px;
+    margin:0 auto;
+    padding:22px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid #d8d3c6;
+    border-radius:8px;
+    box-shadow:0 2px 10px rgba(15,41,66,0.07);
+    padding:18px 20px;
+    margin-bottom:20px;
+  }
+  h2{
+    font-family:Georgia, 'Times New Roman', serif;
+    font-size:15px;
+    color:#fff;
+    background:linear-gradient(90deg, var(--navy), var(--steel));
+    padding:8px 12px;
+    margin:0 0 14px 0;
+    border-radius:5px;
+    letter-spacing:0.4px;
+  }
+  h2 .tag{
+    float:right;
+    font-family:'Segoe UI', Arial, sans-serif;
+    font-size:10px;
+    font-weight:normal;
+    color:#dbe9f5;
+    background:rgba(255,255,255,0.15);
+    padding:2px 8px;
+    border-radius:10px;
+  }
+  /* --- Title block (engineering drawing style) --- */
+  .titleblock{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    border:2px solid var(--navy);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .titleblock > div{
+    border-right:1px solid #cfd6dd;
+    border-bottom:1px solid #cfd6dd;
+    padding:8px 10px;
+  }
+  .titleblock > div:nth-child(4n){ border-right:none; }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
+    gap:10px 16px;
+  }
+  label{
+    display:block;
+    font-size:10.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    color:var(--navy);
+    margin-bottom:4px;
+  }
+  input, select{
+    width:100%;
+    padding:7px 8px;
+    font-size:13px;
+    border:1.5px solid #b9c3cc;
+    border-radius:4px;
+    background:var(--yellow);
+    font-family:'Segoe UI', Arial, sans-serif;
+    color:var(--text);
+  }
+  input:focus, select:focus{
+    outline:none;
+    border-color:var(--amber);
+    box-shadow:0 0 0 3px rgba(217,127,44,0.18);
+  }
+  .titleblock input, .titleblock select{ background:var(--yellow); }
+
+  table{
+    border-collapse:collapse;
+    width:100%;
+    font-size:11.5px;
+  }
+  th, td{
+    border:1px solid #c9c2b0;
+    padding:6px 7px;
+    text-align:center;
+    white-space:nowrap;
+  }
+  th{
+    background:var(--navy);
+    color:#fff;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+    position:sticky;
+    top:0;
+  }
+  tbody tr:nth-child(even){ background:#f7f8fa; }
+  tbody tr:hover{ background:#eef4f9; }
+  td input{
+    border:1px solid #cbd2d8;
+    border-radius:3px;
+    background:var(--yellow);
+    text-align:center;
+    padding:4px;
+    font-size:11.5px;
+    width:64px;
+  }
+  .tablewrap{ overflow-x:auto; border:1px solid #d8d3c6; border-radius:6px; }
+  .spanTitle{ font-weight:800; background:var(--navy) !important; color:#fff; }
+
+  .btnrow{
+    display:flex;
+    gap:12px;
+    margin:6px 0 4px;
+    flex-wrap:wrap;
+  }
+  button{
+    background:var(--amber);
+    color:#241505;
+    border:none;
+    padding:11px 22px;
+    font-size:13.5px;
+    font-weight:800;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    cursor:pointer;
+    border-radius:5px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.15);
+    transition:transform 0.08s ease, background 0.15s ease;
+  }
+  button:hover{ background:var(--amber-dark); transform:translateY(-1px); }
+  button:active{ transform:translateY(0); }
+  button.secondary{
+    background:var(--navy);
+    color:#fff;
+  }
+  button.secondary:hover{ background:var(--navy-deep); }
+
+  .ok{ background:var(--green); color:var(--green-dark); font-weight:800; }
+  .fail{ background:var(--red); color:var(--red-dark); font-weight:800; }
+  .callout{ font-weight:800; background:#dcecff; color:var(--navy); }
+
+  .notice{
+    font-size:11.5px;
+    background:#fff2dd;
+    border:1px solid var(--amber);
+    border-left:5px solid var(--amber);
+    padding:10px 12px;
+    border-radius:5px;
+    margin-bottom:16px;
+    color:#5a3a10;
+  }
+  .footer-note{
+    font-size:10.5px;
+    color:#5a5a5a;
+    margin-top:14px;
+    border-top:1px dashed #c9c2b0;
+    padding-top:10px;
+    line-height:1.5;
+  }
+  @media print{
+    body{ background:#fff; }
+    .topbar{ background:var(--navy) !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .no-print{ display:none !important; }
+    .card{ box-shadow:none; border:1px solid #000; }
+  }
+  @media (max-width:640px){
+    .titleblock{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>REINFORCED CONCRETE CONTINUOUS BEAM DESIGN</h1>
+  <div class="sub">Office Method &middot; ACI 318-19 Approximate Moment Coefficients &middot; Yellow = your input, everything else calculates automatically</div>
+</div>
+
+<div class="wrap">
+
+  <div class="card">
+    <h2>PROJECT INFORMATION</h2>
+    <div class="titleblock">
+      <div><label>Project Name</label><input id="projName" type="text"></div>
+      <div><label>Beam Label / ID</label><input id="beamId" type="text"></div>
+      <div><label>Designer</label><input id="designer" type="text"></div>
+      <div><label>Date</label><input id="theDate" type="date"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>DESIGN PARAMETERS</h2>
+    <div class="grid">
+      <div>
+        <label>Number of Spans (1-10)</label>
+        <select id="numSpans"></select>
+      </div>
+      <div>
+        <label>Section Type</label>
+        <select id="sectionType">
+          <option value="Rectangular">Rectangular</option>
+          <option value="T-Beam">T-Beam</option>
+        </select>
+      </div>
+      <div>
+        <label>f'c — Concrete Strength (ksi)</label>
+        <input id="fc" type="number" step="0.1" value="3">
+      </div>
+      <div>
+        <label>fy — Steel Yield Strength (ksi)</label>
+        <input id="fy" type="number" step="1" value="60">
+      </div>
+    </div>
+  </div>
+
+  <div class="notice">
+    Enter <b>w, P1, P2, P3, P4 as FACTORED (ultimate)</b> loads per ACI 318-19 §5.3 (e.g. 1.2D + 1.6L). Distances a1–a4 are measured from the LEFT support of that span. Leave a load's P/a blank (0) if that span has fewer than 4 point loads.
+  </div>
+
+  <div class="card">
+    <h2>SPAN LOADING &amp; SECTION DATA</h2>
+    <div class="tablewrap">
+      <table id="inputTable">
+        <thead>
+          <tr>
+            <th>Span</th><th>L (ft)</th><th>w (k/ft)</th>
+            <th>P1 (k)</th><th>a1 (ft)</th>
+            <th>P2 (k)</th><th>a2 (ft)</th>
+            <th>P3 (k)</th><th>a3 (ft)</th>
+            <th>P4 (k)</th><th>a4 (ft)</th>
+            <th>b (in)</th><th>h (in)</th><th>d (in)</th><th>d' (in)</th><th class="tbeamCol">bf (in)</th>
+          </tr>
+        </thead>
+        <tbody id="inputBody"></tbody>
+      </table>
+    </div>
+
+    <div class="btnrow no-print" style="margin-top:16px;">
+      <button onclick="calculate()">Calculate</button>
+      <button class="secondary" onclick="window.print()">Print Report</button>
+      <button class="secondary" onclick="loadSample()">Load Sample Data</button>
+    </div>
+  </div>
+
+  <div id="resultsSection" class="card" style="display:none;">
+    <h2>RESULTS — SHEAR, MOMENT &amp; REINFORCEMENT <span class="tag">As = Mu / 3.9d</span></h2>
+    <div class="tablewrap">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Span</th><th>Condition</th>
+            <th>Vu (k)</th><th>&phi;Vc (k)</th><th>Shear Check</th>
+            <th>Mu+ (k-ft)</th><th>Mu- (k-ft)</th>
+            <th>h_min (in)</th><th>Depth Check</th>
+            <th>As Bottom (in&sup2;)</th><th>Bottom Bars</th><th>Bot. Check</th>
+            <th>As Top (in&sup2;)</th><th>Top Bars</th><th>Top Check</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+    <div class="footer-note">
+      Method notes: Positive/negative UDL moment coefficients (wL&sup2;/10, wL&sup2;/9) follow the ACI approximate moment coefficient method for continuous beams with roughly equal spans, UDL &le; 3&times; point load. Point-load moments are exact: M+ = 2Pa&sup2;b&sup2;/L&sup3; (midspan-type), M- = Pa&sup2;b/L&sup2; (support-type), superposed onto the UDL moment. Shear multiplier of 1.15 approximates increased shear at the face of the first interior support. The As column shown here is the direct result of As = Mu / (3.9&middot;d) &mdash; the same simplified formula cell in your workbook (fy = 60 ksi basis, &phi;=0.90, j&asymp;0.87, Hassoun &amp; Al-Manaseer). Pass/fail checks additionally verify against As_min = &rho;_min&middot;b&middot;d and As_max = &rho;_max&middot;b&middot;d behind the scenes, same as the sheet. For irregular spans, unbalanced loading, or final construction documents, verify with a full continuous-beam analysis (moment distribution / matrix / ETABS).
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---------- Constants (from Data_Tables sheet) ----------
+const BAR_AREA = {4:0.196, 5:0.307, 6:0.44, 7:0.6, 8:0.785, 9:1.0, 10:1.27, 11:1.56};
+const BAR_SELECT_THRESHOLD = [ [4,0.2], [5,0.31], [6,0.44], [7,0.6], [8,0.79], [9,1.0] ];
+const PHI_SHEAR = 0.75;
+const MAX_BARS_PER_LAYER = 6;
+
+// ---------- Build number-of-spans dropdown ----------
+const numSpansSel = document.getElementById('numSpans');
+for(let i=1;i<=10;i++){
+  const opt = document.createElement('option');
+  opt.value = i; opt.textContent = i;
+  if(i===4) opt.selected = true;
+  numSpansSel.appendChild(opt);
+}
+
+function buildInputRows(){
+  const n = parseInt(numSpansSel.value);
+  const tbody = document.getElementById('inputBody');
+  const oldVals = [];
+  tbody.querySelectorAll('tr').forEach(tr=>{
+    const vals = {};
+    tr.querySelectorAll('input').forEach(inp=>{ vals[inp.dataset.field]=inp.value; });
+    oldVals.push(vals);
+  });
+  tbody.innerHTML = '';
+  const fields = ['L','w','P1','a1','P2','a2','P3','a3','P4','a4','b','h','d','dp','bf'];
+  for(let i=0;i<n;i++){
+    const tr = document.createElement('tr');
+    let html = `<td class="spanTitle">${i+1}</td>`;
+    fields.forEach(f=>{
+      const old = oldVals[i] ? oldVals[i][f] : '';
+      let cls = (f==='bf') ? 'tbeamCol' : '';
+      html += `<td class="${cls}"><input data-field="${f}" data-row="${i}" type="number" step="any" value="${old||''}"></td>`;
+    });
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  }
+  toggleTbeamCols();
+}
+numSpansSel.addEventListener('change', buildInputRows);
+
+function toggleTbeamCols(){
+  const isT = document.getElementById('sectionType').value === 'T-Beam';
+  document.querySelectorAll('.tbeamCol').forEach(el=> el.style.display = isT ? '' : 'none');
+}
+document.getElementById('sectionType').addEventListener('change', toggleTbeamCols);
+
+function getVal(row, field){
+  const inp = document.querySelector(`input[data-row="${row}"][data-field="${field}"]`);
+  const v = inp ? parseFloat(inp.value) : 0;
+  return isNaN(v) ? 0 : v;
+}
+
+function chooseBar(Asreq){
+  if(Asreq<=0) return 4;
+  for(const [bar, thr] of BAR_SELECT_THRESHOLD){
+    if(Math.ceil(Asreq/thr) <= MAX_BARS_PER_LAYER) return bar;
+  }
+  return 10;
+}
+
+function calcSpan(i, n, sectionType, fc, fy){
+  const L  = getVal(i,'L');
+  if(!L) return null;
+  const w  = getVal(i,'w');
+  const P1 = getVal(i,'P1'), a1 = getVal(i,'a1');
+  const P2 = getVal(i,'P2'), a2 = getVal(i,'a2');
+  const P3 = getVal(i,'P3'), a3 = getVal(i,'a3');
+  const P4 = getVal(i,'P4'), a4 = getVal(i,'a4');
+  const b  = getVal(i,'b'),  h  = getVal(i,'h');
+  const d  = getVal(i,'d'),  dp = getVal(i,'dp');
+
+  const b1 = L-a1, b2 = L-a2, b3 = L-a3, b4 = L-a4;
+
+  const condition = (n===1) ? 'Simply Supported' :
+                     (i===0 || i===n-1) ? 'End Span (Continuous)' : 'Interior Span (Continuous)';
+
+  const udlShear = w*L/2;
+  const p1Shear = P1===0?0:P1*b1/L;
+  const p2Shear = P2===0?0:P2*b2/L;
+  const p3Shear = P3===0?0:P3*b3/L;
+  const p4Shear = P4===0?0:P4*b4/L;
+  const shearMult = (n===1) ? 1 : 1.15;
+  const Vu = (udlShear+p1Shear+p2Shear+p3Shear+p4Shear)*shearMult;
+
+  const posCoeffDenom = (n===1) ? 8 : 10;
+  const udlMomPos = w*L*L/posCoeffDenom;
+  const p1MomPos = P1===0?0:2*P1*a1*a1*b1*b1/(L*L*L);
+  const p2MomPos = P2===0?0:2*P2*a2*a2*b2*b2/(L*L*L);
+  const p3MomPos = P3===0?0:2*P3*a3*a3*b3*b3/(L*L*L);
+  const p4MomPos = P4===0?0:2*P4*a4*a4*b4*b4/(L*L*L);
+  const MuPos = udlMomPos+p1MomPos+p2MomPos+p3MomPos+p4MomPos;
+
+  const udlMomNeg = (n===1) ? 0 : w*L*L/9;
+  const p1MomNeg = P1===0?0:P1*a1*a1*b1/(L*L);
+  const p2MomNeg = P2===0?0:P2*a2*a2*b2/(L*L);
+  const p3MomNeg = P3===0?0:P3*a3*a3*b3/(L*L);
+  const p4MomNeg = P4===0?0:P4*a4*a4*b4/(L*L);
+  const MuNeg = udlMomNeg+p1MomNeg+p2MomNeg+p3MomNeg+p4MomNeg;
+
+  const V = (n===1) ? 16 : (i===0 || i===n-1) ? 18.5 : 21;
+  const hmin = (L*12/V)*(0.4+fy/100);
+  const depthCheck = h>=hmin ? 'OK' : 'FAIL - INCREASE h';
+
+  const beta1 = fc<=4 ? 0.85 : Math.max(0.65, 0.85-0.05*(fc-4));
+  const rhoMin = Math.max(3*Math.sqrt(fc*1000),200)/(fy*1000);
+  const rhoMax = 0.319*beta1*fc/fy;
+
+  // ---- Bottom steel (positive moment): As = Mu / (3.9 d) ----
+  const AsBot = MuPos/(3.9*d);
+  const AsReqBot = Math.max(AsBot, rhoMin*b*d);   // used only for pass/fail check
+  const AsMaxBot = rhoMax*b*d;
+  const botCheck = AsReqBot<=AsMaxBot ? 'OK' : 'FAIL - INCREASE SECTION';
+  const botBar = chooseBar(AsBot);
+  const botBarArea = BAR_AREA[botBar];
+  const botCount = Math.max(2, Math.ceil(AsBot/botBarArea));
+  const botCallout = `${botCount} - No. ${botBar}`;
+
+  // ---- Top steel (negative moment): As = Mu / (3.9 d') ----
+  let AsTop=0, topCheck='N/A', topBar=null, topBarArea=0, topCount=0, topCallout='—';
+  if(MuNeg>0){
+    AsTop = MuNeg/(3.9*dp);
+    const AsReqTop = Math.max(AsTop, rhoMin*b*dp);
+    const AsMaxTop = rhoMax*b*dp;
+    topCheck = AsReqTop<=AsMaxTop ? 'OK' : 'FAIL - INCREASE SECTION';
+    topBar = chooseBar(AsTop);
+    topBarArea = BAR_AREA[topBar];
+    topCount = Math.max(2, Math.ceil(AsTop/topBarArea));
+    topCallout = `${topCount} - No. ${topBar}`;
+  }
+
+  const phiVc = PHI_SHEAR*2*Math.sqrt(fc*1000)*b*d/1000;
+  const shearCheck = Vu<=phiVc ? "OK - Vu <= phiVc" : "STIRRUPS REQ'D - design Vs";
+
+  return {
+    span:i+1, condition, Vu, phiVc, shearCheck,
+    MuPos, MuNeg, hmin, depthCheck,
+    AsBot, botCallout, botCheck,
+    AsTop, topCallout, topCheck
+  };
+}
+
+function calculate(){
+  const n = parseInt(numSpansSel.value);
+  const sectionType = document.getElementById('sectionType').value;
+  const fc = parseFloat(document.getElementById('fc').value)||0;
+  const fy = parseFloat(document.getElementById('fy').value)||0;
+
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+
+  for(let i=0;i<n;i++){
+    const r = calcSpan(i, n, sectionType, fc, fy);
+    if(!r) continue;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="spanTitle">${r.span}</td>
+      <td>${r.condition}</td>
+      <td>${r.Vu.toFixed(2)}</td>
+      <td>${r.phiVc.toFixed(2)}</td>
+      <td class="${r.shearCheck.startsWith('OK')?'ok':'fail'}">${r.shearCheck}</td>
+      <td>${r.MuPos.toFixed(2)}</td>
+      <td>${r.MuNeg.toFixed(2)}</td>
+      <td>${r.hmin.toFixed(2)}</td>
+      <td class="${r.depthCheck==='OK'?'ok':'fail'}">${r.depthCheck}</td>
+      <td>${r.AsBot.toFixed(3)}</td>
+      <td class="callout">${r.botCallout}</td>
+      <td class="${r.botCheck==='OK'?'ok':'fail'}">${r.botCheck}</td>
+      <td>${r.AsTop?r.AsTop.toFixed(3):'0.000'}</td>
+      <td class="callout">${r.topCallout}</td>
+      <td class="${r.topCheck==='OK'||r.topCheck==='N/A'?'ok':'fail'}">${r.topCheck}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({behavior:'smooth'});
+}
+
+function loadSample(){
+  numSpansSel.value = 7;
+  buildInputRows();
+  document.getElementById('fc').value = 2.5;
+  document.getElementById('fy').value = 60;
+  const sample = [
+    {L:10.5, w:3,    b:6,h:30,d:17.5,dp:17.5,bf:6},
+    {L:15,   w:3,    P1:22,a1:8, b:6,h:30,d:17.5,dp:17.5,bf:6},
+    {L:12,   w:2.3,  P1:21,a1:3.5, b:6,h:30,d:17.5,dp:17.5,bf:6},
+    {L:6,    w:1.96, b:6,h:30,d:17.5,dp:17.5,bf:6},
+    {L:12.25,w:1.96, P1:37,a1:1.83, P2:26,a2:10, b:6,h:30,d:17.5,dp:17.5,bf:6},
+    {L:14.25,w:1.85, P1:40,a1:7.25, b:6,h:30,d:17.5,dp:17.5,bf:6},
+    {L:17,   w:2.075,P1:21,a1:2.5, b:6,h:30,d:17.5,dp:17.5,bf:6}
+  ];
+  sample.forEach((s,i)=>{
+    Object.keys(s).forEach(f=>{
+      const inp = document.querySelector(`input[data-row="${i}"][data-field="${f}"]`);
+      if(inp) inp.value = s[f];
+    });
+  });
+}
+
+buildInputRows();
+</script>
+</body>
+</html>
